@@ -15,7 +15,6 @@ do {
 do {
     with 'MouseX::Getopt';
     with 'MouseX::Getopt::Dashes';
-    with 'MouseX::NativeTraits';
 } unless Any::Moose::_is_moose_loaded();
 
 
@@ -45,7 +44,7 @@ sub _build_cores {
     my $self = shift;
     given ($self->os) {
         when ('darwin') { $_ = `sysctl hw.ncpu | awk '{print \$2}'`; chomp; $_ }
-        when ('linux')  { $_ = `grep cores < /proc/cpuinfo | tail -n 1 | awk '{print \$4}'`; chomp; $_ }
+        when ('linux')  { $_ = `grep processor < /proc/cpuinfo | wc -l'`; chomp; $_ }
     }
 }
 
@@ -66,7 +65,7 @@ __PACKAGE__->meta->make_immutable();
 
 = SYNOPSIS
 
-On different systems, different approaches are needed to detect the number of cores for that machine.
+On different system, different approaches are needed to detect the number of cores for that machine.
 
 This Module is a wrapper around these different approaches.
 
@@ -79,6 +78,10 @@ It is really simple and straightforward:
     usage: mcores [-?i] [long options...]
         -? --usage --help  Prints this usage information.
         -i --add-one       add one to the number of cores (useful in scripts)
+
+= SUPPORTED SYSTEMS
+* darwin (OSX)
+* Linux
 
 = WARNING
 Some questions with Dist::Zilla are still open, and although this module attempts to load [Mouse] instead of [Moose],
