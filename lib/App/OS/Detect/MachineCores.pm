@@ -44,7 +44,7 @@ sub _build_cores {
     my $self = shift;
     given ($self->os) {
         when ('darwin') { $_ = `sysctl hw.ncpu | awk '{print \$2}'`; chomp; $_ }
-        when ('linux')  { $_ = `grep processor < /proc/cpuinfo | wc -l'`; chomp; $_ }
+        when ('linux')  { $_ = `grep processor < /proc/cpuinfo | wc -l`; chomp; $_ }
     }
 }
 
@@ -82,6 +82,14 @@ It is really simple and straightforward:
 = SUPPORTED SYSTEMS
 * darwin (OSX)
 * Linux
+
+= MOTIVATION
+During development of dotfiles for different platforms I was searching for some way to be able to
+transparantly detect the number of available cores and couldn't find one.
+Also it is quite handy to be able to increment the number by simply using a little switch {-i}.
+
+Example:
+    export TEST_JOBS=`mcores -i`
 
 = WARNING
 Some questions with Dist::Zilla are still open, and although this module attempts to load [Mouse] instead of [Moose],
