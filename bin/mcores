@@ -1,6 +1,8 @@
 #!/usr/bin/env perl
+
 #  PODNAME: mcores
 # ABSTRACT: Executable for App::OS::Detect::MachineCores
+
 use v5.10;
 use strict;
 use warnings;
@@ -11,7 +13,7 @@ use lib "$FindBin::Bin/../lib";
 
 use App::OS::Detect::MachineCores;
 
-print App::OS::Detect::MachineCores->new_with_options->cores;
+say App::OS::Detect::MachineCores->new_with_options->cores;
 
 =begin wikidoc
 
@@ -25,10 +27,4 @@ This Module is a wrapper around these different approaches.
 
 This is the executable to [App::OS::Detect::MachineCores], please see the documentation there for usage.
 
-= WARNING
-Some questions with Dist::Zilla are still open, and although this module attempts to load [Mouse] instead of [Moose],
-unfortuantely, however, *both* modules are installed as prerequisites. This will change soon.
-
 =end wikidoc
-
-=cut
