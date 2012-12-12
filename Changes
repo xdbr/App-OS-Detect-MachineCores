@@ -1,3 +1,6 @@
+0.038
+    * Fixed cpan tester's error report
+
 0.037
     * Using [@Author::DBR] in dist.ini now
 
