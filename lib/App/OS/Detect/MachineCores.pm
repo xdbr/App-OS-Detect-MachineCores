@@ -4,6 +4,7 @@ package App::OS::Detect::MachineCores;
 # ABSTRACT: Detect how many cores your machine has (OS-independently)
 
 use true;
+use Carp;
 use 5.010;
 use strict;
 use warnings;
@@ -26,19 +27,16 @@ has cores => (
 
 option add_one => (
     is      => 'rw',
-    isa     => sub { die "Invalid bool!" unless $_[0] == 0 or $_[0] == 1 ] },
+    isa     => sub { die "Invalid bool!" unless $_[0] == 0 or $_[0] == 1 },
     default => sub { '0' },
     short   => 'i',
     doc     => q{add one to the number of cores (useful in scripts)},
 );
 
 sub _build_cores {
-    do {
-        given ($_[0]->os) {
-            when ('darwin') { $_ = `sysctl hw.ncpu | awk '{print \$2}'`;     chomp; $_ }
-            when ('linux')  { $_ = `grep processor < /proc/cpuinfo | wc -l`; chomp; $_ }
-        }
-    } or '0'
+    if    ($_[0]->os =~ 'darwin') { $_ = `sysctl hw.ncpu | awk '{print \$2}'`;     chomp; $_ }
+    elsif ($_[0]->os =~ 'linux')  { $_ = `grep processor < /proc/cpuinfo | wc -l`; chomp; $_ }
+    else { carp "Can't detect the cores for your system/OS, sorry." }
 }
 
 around cores => sub {
