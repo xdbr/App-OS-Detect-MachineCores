@@ -1,10 +1,15 @@
 Revision history for Perl module App::OS::Detect::MachineCores
 
+{{$NEXT}}
+
+    * Reformatted Changes (pull request by neilbowers)
+    * GithubMeta is included in PluginBundle (as of 1.2.2)
+
 1.0.0 2013-09-24
     * Change to semantic versioning
     * Add basic test for dzil to pass
 
-0.040 not released
+0.040
     * Fixed cpan tester's error report 88855:
       don't use smart matching with perl 5.18
     * Got rid of given/when.

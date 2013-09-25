@@ -70,10 +70,12 @@ It is really simple and straightforward:
         -i --add_one    add one to the number of cores (useful in scripts)
 
 = SUPPORTED SYSTEMS
+
 * darwin (OSX)
 * Linux
 
 = MOTIVATION
+
 During development of dotfiles for different platforms I was searching for some way to be able to
 transparantly detect the number of available cores and couldn't find one.
 Also it is quite handy to be able to increment the number by simply using a little switch {-i}.
