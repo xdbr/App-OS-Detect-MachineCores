@@ -2,6 +2,8 @@ Revision history for Perl module App::OS::Detect::MachineCores
 
 {{$NEXT}}
 
+1.1.2     2013-09-25 22:09:10 Europe/Berlin
+
     * Reformatted Changes (pull request by neilbowers)
     * GithubMeta is included in PluginBundle (as of 1.2.2)
 
