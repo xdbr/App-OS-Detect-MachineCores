@@ -11,6 +11,8 @@ use warnings;
 
 use Moo;
 use MooX::Options skip_options => [qw<os cores>];
+use Module::Load::Conditional qw/can_load/;
+use IPC::Open2;
 
 has os => (
     is       => 'ro',
@@ -34,9 +36,23 @@ option add_one => (
 );
 
 sub _build_cores {
-    if    ($_[0]->os =~ 'darwin') { $_ = `sysctl hw.ncpu | awk '{print \$2}'`;     chomp; $_ }
-    elsif ($_[0]->os =~ 'linux')  { $_ = `grep processor < /proc/cpuinfo | wc -l`; chomp; $_ }
-    else { carp "Can't detect the cores for your system/OS, sorry." }
+    my $cores;
+    my $ffi = can_load( modules => { 'FFI::Platypus' => undef } ) ? FFI::Platypus->new();
+    if ($ffi) {
+        $ffi->lib(undef);
+        $cores = eval { $ffi->function( sysconf => ['int'] => 'long' )->call(84) };
+    }
+    if (!$cores) {
+        my $cmd;
+        for ($_[0]->os) {
+            when ('linux')   { $cmd = 'grep -c processor /proc/cpuinfo' }
+            when ('darwin')  { $cmd = 'sysctl hw.ncpu | awk \'{print \$2}\'' }
+            when ('MSWin32') { $cmd = 'echo %NUMBER_OF_PROCESSORS%' }
+            default { carp "Can't detect the cores for your system/OS, sorry."; return 0; }
+        }
+        waitpid( open2(my $out, my $in, $cmd), 0);
+        $cores = <$out> + 0;
+    }
 }
 
 around cores => sub {
