@@ -60,8 +60,13 @@ sub _build_cores {
         if ($self->os eq 'darwin')  { $cmd = 'sysctl hw.ncpu | awk \'{print \$2}\'' }
         if ($self->os eq 'MSWin32') { $cmd = 'echo %NUMBER_OF_PROCESSORS%' }
 
-        waitpid( open2(my $out, my $in, $cmd), 0);
-        $cores = <$out> + 0;
+        if ($cmd) {
+            waitpid( open2(my $out, my $in, $cmd), 0);
+            $cores = <$out> + 0;
+        }
+        else {
+            carp("Can't detect the cores for your system/OS, sorry.");
+        }
     }
 
     return $cores;
