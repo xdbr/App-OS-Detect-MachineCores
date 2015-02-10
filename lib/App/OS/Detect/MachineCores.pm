@@ -11,7 +11,7 @@ use warnings;
 
 use Moo;
 use MooX::Options skip_options => [qw<os cores>];
-use Module::Load::Conditional qw/can_load/;
+use POSIX qw/ sysconf /;
 use IPC::Open2;
 
 has os => (
@@ -35,24 +35,36 @@ option add_one => (
     doc     => q{add one to the number of cores (useful in scripts)},
 );
 
+has SC_NPROCESSORS_ONLN => (
+    is       => 'ro',
+    default  => sub { 84 },
+);
+
+sub _build_SC_NPROCESSORS_ONLN {
+    my ($self) = @_;
+    return ($self->os eq 'aix') ? 73 : 84;
+}
+
 sub _build_cores {
+    my ($self) = @_;
     my $cores;
-    my $ffi = can_load( modules => { 'FFI::Platypus' => undef } ) ? FFI::Platypus->new();
-    if ($ffi) {
-        $ffi->lib(undef);
-        $cores = eval { $ffi->function( sysconf => ['int'] => 'long' )->call(84) };
+
+    if ($self->os =~ /aix|bsdos|darwin|dynixptx|freebsd|linux|hpux|irix|openbsd|solaris|sunos/) {
+        $cores = sysconf $self->SC_NPROCESSORS_ONLN;
     }
+
     if (!$cores) {
         my $cmd;
-        for ($_[0]->os) {
-            when ('linux')   { $cmd = 'grep -c processor /proc/cpuinfo' }
-            when ('darwin')  { $cmd = 'sysctl hw.ncpu | awk \'{print \$2}\'' }
-            when ('MSWin32') { $cmd = 'echo %NUMBER_OF_PROCESSORS%' }
-            default { carp "Can't detect the cores for your system/OS, sorry."; return 0; }
-        }
+
+        if ($self->os eq 'linux')   { $cmd = 'grep -c processor /proc/cpuinfo' }
+        if ($self->os eq 'darwin')  { $cmd = 'sysctl hw.ncpu | awk \'{print \$2}\'' }
+        if ($self->os eq 'MSWin32') { $cmd = 'echo %NUMBER_OF_PROCESSORS%' }
+
         waitpid( open2(my $out, my $in, $cmd), 0);
         $cores = <$out> + 0;
     }
+
+    return $cores;
 }
 
 around cores => sub {
