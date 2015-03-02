@@ -1,5 +1,9 @@
 Revision history for Perl module App::OS::Detect::MachineCores
 
+1.2.3
+
+    * Slim down more dependencies because toolchain can't handle it...
+
 1.2.2
 
     * PAUSE won't accept generated META.yml
