@@ -104,8 +104,20 @@ It is really simple and straightforward:
 
 = SUPPORTED SYSTEMS
 
-* darwin (OSX)
 * Linux
+* OSX
+* Windows
+* aix
+* bsdos
+* darwin
+* dynixptx
+* freebsd
+* linux
+* hpux
+* irix
+* openbsd
+* solaris
+* sunos
 
 = MOTIVATION
 
@@ -114,6 +126,7 @@ transparantly detect the number of available cores and couldn't find one.
 Also it is quite handy to be able to increment the number by simply using a little switch {-i}.
 
 Example:
+
     export TEST_JOBS=`mcores -i`
 
 =end wikidoc
