@@ -1,5 +1,9 @@
 Revision history for Perl module App::OS::Detect::MachineCores
 
+1.2.2
+
+    * PAUSE won't accept generated META.yml
+
 1.2.1
 
     * Slim down on Dist::Zilla / add POD back in
