@@ -11,6 +11,8 @@ use warnings;
 
 use Moo;
 use MooX::Options skip_options => [qw<os cores>];
+use POSIX qw/ sysconf /;
+use IPC::Open2;
 
 has os => (
     is       => 'ro',
@@ -33,10 +35,41 @@ option add_one => (
     doc     => q{add one to the number of cores (useful in scripts)},
 );
 
+has SC_NPROCESSORS_ONLN => (
+    is       => 'ro',
+    default  => sub { 84 },
+);
+
+sub _build_SC_NPROCESSORS_ONLN {
+    my ($self) = @_;
+    return ($self->os eq 'aix') ? 73 : 84;
+}
+
 sub _build_cores {
-    if    ($_[0]->os =~ 'darwin') { $_ = `sysctl hw.ncpu | awk '{print \$2}'`;     chomp; $_ }
-    elsif ($_[0]->os =~ 'linux')  { $_ = `grep processor < /proc/cpuinfo | wc -l`; chomp; $_ }
-    else { carp "Can't detect the cores for your system/OS, sorry." }
+    my ($self) = @_;
+    my $cores;
+
+    if ($self->os =~ /aix|bsdos|darwin|dynixptx|freebsd|linux|hpux|irix|openbsd|solaris|sunos/) {
+        $cores = sysconf $self->SC_NPROCESSORS_ONLN;
+    }
+
+    if (!$cores) {
+        my $cmd;
+
+        if ($self->os eq 'linux')   { $cmd = q<grep -c processor /proc/cpuinfo> }
+        if ($self->os eq 'darwin')  { $cmd = q<sysctl hw.ncpu | awk '{print $2}'> }
+        if ($self->os eq 'MSWin32') { $cmd = q<echo %NUMBER_OF_PROCESSORS%> }
+
+        if ($cmd) {
+            waitpid( open2(my $out, my $in, $cmd), 0);
+            $cores = <$out> + 0;
+        }
+        else {
+            carp("Can't detect the cores for your system/OS, sorry.");
+        }
+    }
+
+    return $cores;
 }
 
 around cores => sub {
@@ -71,8 +104,20 @@ It is really simple and straightforward:
 
 = SUPPORTED SYSTEMS
 
-* darwin (OSX)
 * Linux
+* OSX
+* Windows
+* aix
+* bsdos
+* darwin
+* dynixptx
+* freebsd
+* linux
+* hpux
+* irix
+* openbsd
+* solaris
+* sunos
 
 = MOTIVATION
 
@@ -81,6 +126,7 @@ transparantly detect the number of available cores and couldn't find one.
 Also it is quite handy to be able to increment the number by simply using a little switch {-i}.
 
 Example:
+
     export TEST_JOBS=`mcores -i`
 
 =end wikidoc

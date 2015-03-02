@@ -1,6 +1,12 @@
 Revision history for Perl module App::OS::Detect::MachineCores
 
-{{$NEXT}}
+1.2.1
+
+    * Slim down on Dist::Zilla / add POD back in
+
+1.2.0
+
+    * Support more operating systems (thanks @jbarrett!)
 
 1.1.2     2013-09-25 22:09:10 Europe/Berlin
 
