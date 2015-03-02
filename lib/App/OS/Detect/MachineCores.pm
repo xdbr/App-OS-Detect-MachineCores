@@ -56,9 +56,9 @@ sub _build_cores {
     if (!$cores) {
         my $cmd;
 
-        if ($self->os eq 'linux')   { $cmd = 'grep -c processor /proc/cpuinfo' }
-        if ($self->os eq 'darwin')  { $cmd = 'sysctl hw.ncpu | awk \'{print \$2}\'' }
-        if ($self->os eq 'MSWin32') { $cmd = 'echo %NUMBER_OF_PROCESSORS%' }
+        if ($self->os eq 'linux')   { $cmd = q<grep -c processor /proc/cpuinfo> }
+        if ($self->os eq 'darwin')  { $cmd = q<sysctl hw.ncpu | awk '{print $2}'> }
+        if ($self->os eq 'MSWin32') { $cmd = q<echo %NUMBER_OF_PROCESSORS%> }
 
         if ($cmd) {
             waitpid( open2(my $out, my $in, $cmd), 0);
