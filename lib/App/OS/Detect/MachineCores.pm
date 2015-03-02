@@ -3,7 +3,6 @@ package App::OS::Detect::MachineCores;
 #  PODNAME: App::OS::Detect::MachineCores
 # ABSTRACT: Detect how many cores your machine has (OS-independently)
 
-use true;
 use Carp;
 use 5.010;
 use strict;
@@ -81,6 +80,7 @@ around cores => sub {
 
 no Moo;
 
+1;
 
 =for Pod::Coverage os cores _build_cores add_one
 
